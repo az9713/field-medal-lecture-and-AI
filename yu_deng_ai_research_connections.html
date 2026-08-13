@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A mathematically grounded research memo on possible connections between Yu Deng's work and AI theory.">
+  <title>Yu Deng's Mathematics as a Lens on AI Theory</title>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --night: #07141e;
+      --night-2: #0c202d;
+      --paper: #eaf2f4;
+      --paper-2: #dce8eb;
+      --ink: #10232c;
+      --muted: #526b75;
+      --cyan: #55d6be;
+      --violet: #9f91ff;
+      --amber: #f2b84b;
+      --red: #e87570;
+      --line: rgba(234,242,244,.18);
+      --shadow: 0 24px 70px rgba(0,0,0,.27);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 84% 9%, rgba(159,145,255,.14), transparent 27rem),
+        radial-gradient(circle at 11% 34%, rgba(85,214,190,.10), transparent 32rem),
+        var(--night);
+      color: var(--paper);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      line-height: 1.65;
+    }
+    a { color: inherit; text-underline-offset: .2em; }
+    a:hover { color: var(--cyan); }
+    :focus-visible { outline: 3px solid var(--amber); outline-offset: 4px; }
+    .skip-link { position: fixed; top: 10px; left: 10px; transform: translateY(-160%); z-index: 30; background: var(--paper); color: var(--ink); padding: .65rem 1rem; border-radius: 8px; }
+    .skip-link:focus { transform: none; }
+    .hero { min-height: 92vh; display: grid; align-items: center; border-bottom: 1px solid var(--line); position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .16; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 42px 42px; mask-image: linear-gradient(to bottom, black, transparent 78%); }
+    .hero-inner { width: min(1180px, calc(100% - 40px)); margin: auto; padding: 90px 0 72px; position: relative; z-index: 1; }
+    .eyebrow, .kicker { font: 700 .76rem/1.2 Consolas, monospace; letter-spacing: .14em; text-transform: uppercase; color: var(--cyan); }
+    h1, h2, h3 { font-family: Georgia, "Times New Roman", serif; font-weight: 500; line-height: 1.08; margin-top: 0; }
+    h1 { max-width: 960px; font-size: clamp(3rem, 8vw, 7.7rem); letter-spacing: -.055em; margin: 1rem 0 1.4rem; }
+    h1 em { color: var(--cyan); font-weight: 400; }
+    .deck { max-width: 780px; font-size: clamp(1.1rem, 2.1vw, 1.48rem); color: #bdd0d6; }
+    .verdict-strip { display: grid; grid-template-columns: 1.45fr repeat(3, .72fr); gap: 1px; margin-top: 3.2rem; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+    .verdict-strip > div { background: rgba(12,32,45,.93); padding: 1.25rem; min-height: 116px; }
+    .verdict-strip strong { display: block; font-size: 1.1rem; margin-bottom: .35rem; }
+    .verdict-strip span { color: #aabfc6; font-size: .9rem; }
+    .signal { font: 700 .72rem Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .signal.established { color: var(--cyan); }
+    .signal.program { color: var(--violet); }
+    .signal.reject { color: var(--red); }
+    .shell { width: min(1180px, calc(100% - 40px)); margin: 0 auto; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 54px; align-items: start; }
+    nav { position: sticky; top: 18px; padding: 48px 0; }
+    nav .nav-title { color: #78919b; font: 700 .7rem Consolas, monospace; letter-spacing: .13em; text-transform: uppercase; margin-bottom: .8rem; }
+    nav a { display: block; padding: .56rem .65rem; text-decoration: none; border-left: 1px solid var(--line); color: #9cb2ba; font-size: .9rem; }
+    nav a:hover { border-color: var(--cyan); background: rgba(85,214,190,.06); }
+    main { min-width: 0; padding: 62px 0 110px; }
+    section { scroll-margin-top: 24px; margin-bottom: 96px; }
+    h2 { font-size: clamp(2.25rem, 5vw, 4.4rem); letter-spacing: -.04em; margin-bottom: 1.25rem; }
+    h3 { font-size: clamp(1.35rem, 2.4vw, 2rem); letter-spacing: -.02em; margin-bottom: .7rem; }
+    p { max-width: 76ch; }
+    .lede { font-size: 1.22rem; color: #c0d1d7; }
+    .paper { background: var(--paper); color: var(--ink); border-radius: var(--radius); padding: clamp(1.3rem, 3.5vw, 2.5rem); box-shadow: var(--shadow); }
+    .paper p { color: #324b55; }
+    .paper h3 { color: var(--ink); }
+    .equation { overflow-x: auto; margin: 1.35rem 0; padding: 1.2rem 1.35rem; background: #cfdee2; border-left: 4px solid #2c9f8b; border-radius: 4px 12px 12px 4px; color: #07141e; }
+    .equation .explain { display: block; margin-top: .7rem; border-top: 1px solid rgba(16,35,44,.16); padding-top: .7rem; color: #3d5963; font-size: .91rem; }
+    .status { display: inline-block; border-radius: 999px; padding: .34rem .62rem; margin-bottom: .9rem; font: 700 .68rem Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; }
+    .status.established { background: rgba(85,214,190,.17); color: #125d50; }
+    .status.program { background: rgba(159,145,255,.18); color: #4d3db0; }
+    .status.reject { background: rgba(232,117,112,.17); color: #8a2f2b; }
+    .callout { margin: 1.5rem 0; padding: 1rem 1.2rem; border: 1px solid rgba(16,35,44,.15); border-radius: 12px; background: rgba(255,255,255,.42); }
+    .callout strong { color: var(--ink); }
+    .logic-chain { list-style: none; padding: 0; margin: 1.6rem 0 0; counter-reset: logic; display: grid; gap: .75rem; }
+    .logic-chain li { counter-increment: logic; display: grid; grid-template-columns: 2.5rem 1fr; gap: .8rem; align-items: start; padding: .9rem; background: rgba(255,255,255,.45); border-radius: 10px; }
+    .logic-chain li::before { content: counter(logic, decimal-leading-zero); color: #167a69; font: 700 .8rem Consolas, monospace; padding-top: .15rem; }
+    .map { margin-top: 2.3rem; background: #091b27; border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); overflow: hidden; }
+    .map svg { display: block; width: 100%; height: auto; min-width: 680px; }
+    .map-scroll { overflow-x: auto; }
+    .legend { display: flex; gap: 1rem; flex-wrap: wrap; margin: 1rem .5rem .25rem; color: #a9bdc4; font-size: .82rem; }
+    .legend span::before { content: ""; display: inline-block; width: 24px; height: 3px; margin-right: .45rem; vertical-align: middle; background: currentColor; }
+    .legend .solid { color: var(--cyan); }
+    .legend .dashed { color: var(--violet); }
+    .legend .blocked { color: var(--red); }
+    .comparison { width: 100%; border-collapse: collapse; margin-top: 1.4rem; font-size: .92rem; }
+    .comparison th, .comparison td { text-align: left; vertical-align: top; padding: .9rem; border-bottom: 1px solid rgba(16,35,44,.14); }
+    .comparison th { font: 700 .72rem Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: #536d76; }
+    .comparison td:first-child { font-family: Georgia, serif; font-size: 1.02rem; color: var(--ink); }
+    .comparison tr:last-child td { border-bottom: 0; }
+    .cards { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1rem; margin-top: 1.5rem; }
+    .card { background: rgba(234,242,244,.07); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem; }
+    .card p { color: #a9bdc4; font-size: .95rem; }
+    .card .number { font: 700 2.8rem/1 Consolas, monospace; color: var(--violet); opacity: .85; }
+    .research-target { border: 1px solid rgba(159,145,255,.45); background: linear-gradient(145deg, rgba(159,145,255,.14), rgba(85,214,190,.06)); border-radius: var(--radius); padding: clamp(1.4rem, 4vw, 2.8rem); }
+    .research-target blockquote { margin: 1.2rem 0; font: 500 clamp(1.25rem, 2.4vw, 1.8rem)/1.42 Georgia, serif; color: #eef4f6; }
+    .test-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .test { border-radius: 13px; padding: 1.15rem; border: 1px solid var(--line); }
+    .test.fail { border-left: 4px solid var(--red); }
+    .test.pass { border-left: 4px solid var(--cyan); }
+    .test p { color: #aabfc6; margin-bottom: 0; }
+    .sources { list-style: none; padding: 0; display: grid; gap: .75rem; }
+    .sources li { padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 11px; color: #aabfc6; }
+    .sources a { color: var(--paper); font-weight: 650; }
+    .sources small { display: block; margin-top: .25rem; color: #758f99; }
+    .provenance { border-top: 1px solid var(--line); padding-top: 1.3rem; color: #8098a1; font-size: .85rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 850px) {
+      .verdict-strip { grid-template-columns: 1fr 1fr; }
+      .shell { display: block; }
+      nav { position: static; display: flex; overflow-x: auto; padding: 20px 0 0; }
+      nav .nav-title { display: none; }
+      nav a { white-space: nowrap; border-left: 0; border-bottom: 1px solid var(--line); }
+      .cards, .test-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .hero-inner, .shell { width: min(100% - 24px, 1180px); }
+      .hero { min-height: auto; }
+      .verdict-strip { grid-template-columns: 1fr; }
+      .verdict-strip > div { min-height: auto; }
+      h1 { font-size: clamp(2.75rem, 16vw, 4.4rem); }
+      main { padding-top: 42px; }
+      section { margin-bottom: 68px; }
+      .comparison { font-size: .82rem; }
+      .comparison th, .comparison td { padding: .65rem .45rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print {
+      body { background: white; color: #111; }
+      .hero { min-height: auto; }
+      .shell { display: block; width: 100%; }
+      nav { display: none; }
+      main { padding: 30px 0; }
+      .paper, .map, .research-target, .card, .test { box-shadow: none; break-inside: avoid; }
+      .paper { border: 1px solid #bbb; }
+      a { color: #111; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to analysis</a>
+  <header class="hero" id="top">
+    <div class="hero-inner">
+      <div class="eyebrow">Research memo · mathematics first</div>
+      <h1>Can Yu Deng’s mathematics illuminate <em>AI theory?</em></h1>
+      <p class="deck">Yes—but through proof technology, not metaphor. The credible bridge is the control of large interacting systems when weak correlations accumulate over long times. The strongest target is finite-width neural-network training beyond the frozen-kernel regime.</p>
+      <div class="verdict-strip" aria-label="Summary verdict">
+        <div><strong>Central verdict</strong><span>A real research program exists, but no theorem for gases or waves transfers automatically to neural networks.</span></div>
+        <div><span class="signal established">Established</span><strong>Shared structures</strong><span>Mean-field limits, hierarchies, cumulants, tensor contractions.</span></div>
+        <div><span class="signal program">Open program</span><strong>Long-time control</strong><span>Retain structured dependence beyond naïve closure.</span></div>
+        <div><span class="signal reject">Reject</span><strong>Literal analogy</strong><span>Tokens are not molecules; loss is not thermodynamic entropy.</span></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell">
+    <nav aria-label="Report sections">
+      <div class="nav-title">Argument map</div>
+      <a href="#verdict">01 · Verdict</a>
+      <a href="#transfer-map">02 · Transfer map</a>
+      <a href="#mean-field">03 · Mean field</a>
+      <a href="#hierarchy">04 · Tangent hierarchy</a>
+      <a href="#transformers">05 · Transformers</a>
+      <a href="#tensors">06 · Random tensors</a>
+      <a href="#diffusion">07 · Diffusion &amp; Langevin</a>
+      <a href="#proposal">08 · Research target</a>
+      <a href="#falsifiers">09 · Falsifiers</a>
+      <a href="#sources">10 · Sources</a>
+    </nav>
+
+    <main id="main">
+      <section id="verdict">
+        <div class="kicker">01 · What survives scrutiny</div>
+        <h2>The bridge is structural, not literal.</h2>
+        <p class="lede">Deng’s recurring problem is to begin with a huge deterministic or random microscopic system, identify a simpler statistical evolution, and prove that neglected correlations stay controlled on the time scale of interest. AI theory repeatedly encounters the same abstract obstruction.</p>
+        <div class="paper">
+          <span class="status established">Established on both sides</span>
+          <h3>There is a common mathematical skeleton</h3>
+          <ol class="logic-chain">
+            <li><div><strong>Microscopic state:</strong> many particles, Fourier modes, neurons, or token representations interact.</div></li>
+            <li><div><strong>Macroscopic description:</strong> replace the finite system by a probability distribution, kernel, or continuum equation.</div></li>
+            <li><div><strong>Closure:</strong> approximate high-order joint information using low-order statistics.</div></li>
+            <li><div><strong>Failure mechanism:</strong> small correlations generated at each interaction can accumulate with time, depth, or training steps.</div></li>
+            <li><div><strong>Proof challenge:</strong> organize interaction histories finely enough to show which connected correlations matter and which cancel or remain small.</div></li>
+          </ol>
+          <div class="callout"><strong>Boundary of the claim.</strong> This shared skeleton suggests reusable proof architecture. It does not identify a physical collision operator, a Boltzmann entropy, or a hydrodynamic limit inside a modern language model.</div>
+        </div>
+      </section>
+
+      <section id="transfer-map">
+        <div class="kicker">02 · Proof-technology transfer map</div>
+        <h2>Where the ideas could land.</h2>
+        <p class="lede">Solid paths mark mathematical structures already present in AI theory. Dashed paths mark plausible but unproved transfers. Red paths mark seductive analogies that have no adequate mathematical identification.</p>
+        <div class="map">
+          <div class="map-scroll">
+            <svg viewBox="0 0 980 520" role="img" aria-labelledby="map-title map-desc">
+              <title id="map-title">Transfer map from Yu Deng's mathematical methods to AI theory</title>
+              <desc id="map-desc">Three columns connect Deng's domains, reusable proof ideas, and possible AI targets. Cyan lines are established structural matches, violet dashed lines are research proposals, and red crossed lines are rejected analogies.</desc>
+              <defs>
+                <marker id="arrow-c" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9Z" fill="#55d6be"/></marker>
+                <marker id="arrow-v" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9Z" fill="#9f91ff"/></marker>
+                <style>
+                  .box{fill:#102b39;stroke:#345363;stroke-width:1.5}.head{fill:#7895a2;font:700 12px Consolas,monospace;letter-spacing:1.6px}.label{fill:#eaf2f4;font:600 16px 'Segoe UI',sans-serif}.sub{fill:#9fb5bd;font:13px 'Segoe UI',sans-serif}.c{stroke:#55d6be;stroke-width:3;fill:none;marker-end:url(#arrow-c)}.v{stroke:#9f91ff;stroke-width:3;stroke-dasharray:8 7;fill:none;marker-end:url(#arrow-v)}.r{stroke:#e87570;stroke-width:3;fill:none}.x{stroke:#e87570;stroke-width:4}
+                </style>
+              </defs>
+              <text x="25" y="32" class="head">DENG'S SETTING</text><text x="360" y="32" class="head">PORTABLE IDEA</text><text x="695" y="32" class="head">AI-THEORY TARGET</text>
+              <rect x="20" y="58" width="245" height="92" rx="12" class="box"/><text x="40" y="89" class="label">Hard-sphere dynamics</text><text x="40" y="116" class="sub">BBGKY, collision histories</text><text x="40" y="136" class="sub">long-time kinetic limit</text>
+              <rect x="20" y="181" width="245" height="92" rx="12" class="box"/><text x="40" y="212" class="label">Wave turbulence</text><text x="40" y="239" class="sub">resonant diagrams</text><text x="40" y="259" class="sub">kinetic timescale</text>
+              <rect x="20" y="304" width="245" height="92" rx="12" class="box"/><text x="40" y="335" class="label">Random tensors</text><text x="40" y="362" class="sub">adapted coefficients</text><text x="40" y="382" class="sub">multilinear Gaussians</text>
+              <rect x="350" y="58" width="260" height="92" rx="12" class="box"/><text x="370" y="89" class="label">Connected correlations</text><text x="370" y="116" class="sub">retain dependence discarded</text><text x="370" y="136" class="sub">by naïve factorization</text>
+              <rect x="350" y="181" width="260" height="92" rx="12" class="box"/><text x="370" y="212" class="label">History organization</text><text x="370" y="239" class="sub">partial time expansion</text><text x="370" y="259" class="sub">diagram cutting / summation</text>
+              <rect x="350" y="304" width="260" height="92" rx="12" class="box"/><text x="370" y="335" class="label">Adapted tensor bounds</text><text x="370" y="362" class="sub">randomness survives nonlinear</text><text x="370" y="382" class="sub">dependence and reuse</text>
+              <rect x="685" y="58" width="275" height="92" rx="12" class="box"/><text x="705" y="89" class="label">Neural tangent hierarchy</text><text x="705" y="116" class="sub">finite-width, long-time</text><text x="705" y="136" class="sub">feature learning</text>
+              <rect x="685" y="181" width="275" height="92" rx="12" class="box"/><text x="705" y="212" class="label">Transformer mean field</text><text x="705" y="239" class="sub">long depth, token</text><text x="705" y="259" class="sub">correlation corrections</text>
+              <rect x="685" y="304" width="275" height="92" rx="12" class="box"/><text x="705" y="335" class="label">Weight-shared networks</text><text x="705" y="362" class="sub">RNNs, attention, routing</text><text x="705" y="382" class="sub">finite-width fluctuations</text>
+              <path d="M265 104 C305 104 310 104 350 104" class="c"/><path d="M265 227 C305 227 310 227 350 227" class="c"/><path d="M265 350 C305 350 310 350 350 350" class="c"/>
+              <path d="M610 104 C650 104 645 104 685 104" class="v"/><path d="M610 227 C650 227 645 227 685 227" class="v"/><path d="M610 350 C650 350 645 350 685 350" class="v"/>
+              <path d="M142 411 C315 492 646 490 822 411" class="r"/><line x1="474" y1="452" x2="496" y2="474" class="x"/><line x1="496" y1="452" x2="474" y2="474" class="x"/><text x="354" y="505" class="sub" fill="#e87570">No literal “tokens = molecules” identification</text>
+            </svg>
+          </div>
+          <div class="legend" aria-hidden="true"><span class="solid">Existing mathematical structure</span><span class="dashed">Proposed transfer</span><span class="blocked">Rejected literal analogy</span></div>
+        </div>
+      </section>
+
+      <section id="mean-field">
+        <div class="kicker">03 · Connection one</div>
+        <h2>Wide networks already look like particle systems.</h2>
+        <div class="paper">
+          <span class="status established">Established AI theory</span>
+          <p>For a two-layer network of width \(m\), write each neuron’s trainable parameters as \(\theta_i=(a_i,w_i)\), where \(a_i\) is its output weight and \(w_i\) its input-weight vector:</p>
+          <div class="equation">\[ f_m(x)=\frac{1}{m}\sum_{i=1}^{m}a_i\,\sigma(w_i\!\cdot x), \qquad \rho_t^m=\frac{1}{m}\sum_{i=1}^{m}\delta_{\theta_i(t)}. \]<span class="explain">The empirical measure \(\rho_t^m\) records the population of neurons in parameter space. A single neuron is a “particle” only in this formal sense.</span></div>
+          <p>Under suitable scaling and assumptions, the large-width limit is described by a nonlinear transport equation for a probability measure \(\rho_t\):</p>
+          <div class="equation">\[ \partial_t\rho_t+\nabla_\theta\!\cdot\bigl(\rho_t V[\rho_t]\bigr)=0. \]<span class="explain">The velocity field \(V[\rho_t]\) depends on the whole current population, because every neuron contributes to the network prediction and hence to every other neuron’s gradient.</span></div>
+          <p>This is a genuine interacting-particle/mean-field structure, proved in the two-layer setting by Mei, Montanari, and Nguyen and developed widely since. But standard stability bounds often have the schematic form</p>
+          <div class="equation">\[ \mathbb E\,W_2(\rho_t^m,\rho_t)\ \lesssim\ \frac{e^{Ct}}{\sqrt m}. \]<span class="explain">\(W_2\) is the quadratic Wasserstein distance. Even if the initial sampling error is \(m^{-1/2}\), an exponential stability factor can make the bound useless when \(t\) grows with width.</span></div>
+          <span class="status program">Where Deng may inspire</span>
+          <p>The opportunity is not to import the Boltzmann equation. It is to replace a crude global Grönwall estimate by a structured expansion of the interaction history, retaining only the connected neuron correlations that can actually propagate error.</p>
+          <div class="callout"><strong>Important limitation.</strong> Uniform-in-time propagation of chaos is already known for some neural-training models under strong stabilizing assumptions—convexity, hypocoercivity, functional inequalities, or sufficient loss decay. A Deng-style program is interesting chiefly where those contraction mechanisms fail: nonconvex feature learning, order-one representation change, or weight sharing.</div>
+        </div>
+      </section>
+
+      <section id="hierarchy">
+        <div class="kicker">04 · Strongest connection</div>
+        <h2>The neural tangent hierarchy is AI’s closest BBGKY analogue.</h2>
+        <p class="lede">During gradient flow, the network outputs are driven by a time-dependent tangent kernel. That kernel is driven by a higher-order kernel, and so on—an exact hierarchy before any closure approximation.</p>
+        <div class="paper">
+          <span class="status established">Exact hierarchy; notation schematic</span>
+          <p>On training inputs \(x_1,\dots,x_n\), let \(f_\alpha(t)=f(x_\alpha;\theta(t))\), targets be \(y_\alpha\), and \(K_t^{(2)}\) be the neural tangent kernel. For squared loss, output dynamics take the form</p>
+          <div class="equation">\[ \dot f_\alpha(t)=-\frac1n\sum_{\beta=1}^{n}K_t^{(2)}(x_\alpha,x_\beta)\bigl(f_\beta(t)-y_\beta\bigr). \]<span class="explain">If \(K_t^{(2)}\) were frozen, this would be a linear kernel regression flow. Finite-width feature learning appears through the evolution of \(K_t^{(2)}\).</span></div>
+          <p>Differentiating the kernel introduces a third-order object; differentiating that introduces a fourth-order object:</p>
+          <div class="equation">\[ \partial_tK_t^{(r)}(x_{\alpha_1},\ldots,x_{\alpha_r})=-\frac1n\sum_{\beta=1}^{n}K_t^{(r+1)}(x_{\alpha_1},\ldots,x_{\alpha_r},x_\beta)\bigl(f_\beta-y_\beta\bigr). \]<span class="explain">Precise definitions and architecture-dependent prefactors are given in the Neural Tangent Hierarchy literature. The structural fact is the coupling \(r\mapsto r+1\).</span></div>
+          <table class="comparison">
+            <thead><tr><th>Kinetic theory</th><th>Neural training</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>\(s\)-particle marginal</td><td>order-\(r\) tangent kernel</td><td>Both sit in an exact upward-coupled hierarchy; they are not the same object.</td></tr>
+              <tr><td>BBGKY: \(s\to s+1\)</td><td>NTH: \(r\to r+1\)</td><td>Strong formal match.</td></tr>
+              <tr><td>factorized closure</td><td>frozen \(K^{(2)}\) / NTK limit</td><td>Both discard evolving higher-order dependence.</td></tr>
+              <tr><td>connected cumulants</td><td>connected tangent correlations</td><td>The latter is a proposed organizing variable.</td></tr>
+              <tr><td>long collision histories</td><td>long training histories</td><td>Plausible diagrammatic analogy; requires model-specific proof.</td></tr>
+            </tbody>
+          </table>
+          <span class="status program">Proposed closure variable</span>
+          <p>Instead of controlling raw \(K^{(r)}\) separately, define connected components \(C_t^{(r)}\) by subtracting all products of lower-order pieces, just as joint cumulants subtract correlations explained by partitions. One would seek an evolution of the schematic form</p>
+          <div class="equation">\[ \partial_t C_t^{(r)}=\mathcal L_t C_t^{(r)}+\mathcal A_t C_t^{(r+1)}+\mathcal N_r\!\left(C_t^{(2)},\ldots,C_t^{(r)}\right), \qquad \|C_t^{(r)}\|\le m^{1-r/2}\Phi_r(t). \]<span class="explain">\(\mathcal L_t\) is the linearized training flow, \(\mathcal A_t\) couples to the next level, and \(\mathcal N_r\) collects lower-order nonlinear combinations. This is a research template, not a proved theorem.</span></div>
+          <p>The hoped-for gain is conceptual: disconnected contributions may be large individually but already encoded by lower-order quantities. The genuinely new information is carried by connected diagrams. Deng’s long-time cumulant method is precisely designed around that distinction.</p>
+        </div>
+      </section>
+
+      <section id="transformers">
+        <div class="kicker">05 · Connection two</div>
+        <h2>Transformer depth admits a continuum picture—with severe caveats.</h2>
+        <div class="paper">
+          <span class="status established">Established in stylized transformer models</span>
+          <p>Represent \(n\) token states at layer \(\ell\) by \(x_1^\ell,\ldots,x_n^\ell\), and their empirical distribution by \(\mu_\ell^n=n^{-1}\sum_j\delta_{x_j^\ell}\). A residual attention update can be idealized as</p>
+          <div class="equation">\[ x_i^{\ell+1}=x_i^\ell+\eta\,V[\mu_\ell^n](x_i^\ell), \qquad \mu_\ell^n=\frac1n\sum_{j=1}^n\delta_{x_j^\ell}. \]<span class="explain">The field \(V\) represents aggregation through attention. Taking residual step size \(\eta\to0\) and depth \(\ell\to\infty\) with \(t=\ell\eta\) fixed leads formally—and for several specified attention models rigorously—to a measure-valued transport PDE.</span></div>
+          <div class="equation">\[ \partial_t\mu_t+\nabla_x\!\cdot\bigl(\mu_tV[\mu_t]\bigr)=0. \]</div>
+          <span class="status program">Possible research direction</span>
+          <p>Finite-token corrections could be organized by connected token cumulants and interaction diagrams across depth. This might improve bounds whose naïve stability factor grows like \(e^{Lt}\), especially when attention repeatedly reuses the same representations.</p>
+          <div class="callout"><strong>Why the gas analogy breaks.</strong> Attention is dense and global, not dilute and binary. Real tokens are neither independent nor generally exchangeable. Positional encoding, causal masks, semantics, and learned weights break symmetries. Attention can create order-one correlations in one layer. Therefore only the hierarchy-and-cumulant philosophy is portable; hard-sphere estimates are not.</div>
+        </div>
+      </section>
+
+      <section id="tensors">
+        <div class="kicker">06 · Connection three</div>
+        <h2>Random tensors may be the most direct methodological bridge.</h2>
+        <p class="lede">Deng, Nahmod, and Yue control multilinear Gaussian expansions whose random tensor coefficients are adapted to previously revealed randomness. Neural networks have exactly this dependence problem: the same random weights are reused across layers, paths, and training steps.</p>
+        <div class="paper">
+          <span class="status established">Shared algebraic object</span>
+          <div class="equation">\[ X_i=\sum_{j_1,\ldots,j_r}T_{i;j_1\ldots j_r}\,g_{j_1}\cdots g_{j_r}. \]<span class="explain">The \(g_j\) are Gaussian variables. The tensor \(T\) may itself depend on part of the randomness, so a black-box independence estimate is invalid. “Adapted” means that dependence is exposed and controlled in a filtration-compatible order.</span></div>
+          <p>Tensor-program theory rigorously identifies leading infinite-width Gaussian-process limits for broad architectures. Neural-tangent hierarchies and Feynman-diagram calculations describe finite-width corrections in selected regimes. The open gap is a robust, nonperturbative calculus that remains stable under many layers or training steps while tracking weight sharing and feature learning.</p>
+          <span class="status program">Credible targets</span>
+          <div class="cards">
+            <div class="callout"><strong>Weight-shared transformers.</strong> The same parameter matrices enter many token paths, creating structured dependence that simple Gaussian independence cannot see.</div>
+            <div class="callout"><strong>Recurrent networks.</strong> Reusing weights over time produces adapted random coefficients naturally indexed by computational history.</div>
+            <div class="callout"><strong>Mixture-of-experts routing.</strong> Random routing and learned gates induce sparse but history-dependent tensor contractions.</div>
+            <div class="callout"><strong>Finite-width feature learning.</strong> Parameters become correlated with their own initialization through training, invalidating static random-feature heuristics.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="diffusion">
+        <div class="kicker">07 · A sharper stochastic connection</div>
+        <h2>Diffusion models and Langevin dynamics are not the same case.</h2>
+        <p class="lede">Langevin training gives a genuine interacting-particle hierarchy. A standard pretrained diffusion model usually does not: conditional on its learned score, independently generated samples do not interact. The Deng connection becomes substantial only when the drift depends on the empirical population, or when one studies many noisy neurons during training.</p>
+
+        <div class="paper">
+          <span class="status established">Case A · Standard score-based diffusion</span>
+          <h3>Forward noise is easy; reverse-time reconstruction is learned.</h3>
+          <p>A continuous-time score-based model starts from data \(X_0\sim p_0\) and adds noise through the Itô SDE</p>
+          <div class="equation">\[ dX_t=b(X_t,t)\,dt+g(t)\,dW_t, \qquad 0\le t\le T. \]<span class="explain">\(W_t\) is Brownian motion, \(b\) is a prescribed drift, and \(g(t)\) is the noise amplitude. The marginal density \(p_t\) becomes progressively smoother and is designed to approach a simple prior at time \(T\).</span></div>
+          <p>Running time backward requires the score \(s_t(x)=\nabla_x\log p_t(x)\). With time parametrized in the reverse direction, the reverse SDE is conventionally written</p>
+          <div class="equation">\[ dX_t=\bigl[b(X_t,t)-g(t)^2\nabla_x\log p_t(X_t)\bigr]dt+g(t)\,d\overline W_t, \qquad dt&lt;0. \]<span class="explain">The sign convention matters: \(dt&lt;0\) indicates integration from \(T\) down to \(0\). A neural network \(s_\theta(x,t)\) approximates the unknown score. Sampling error therefore comes from score error, time discretization, and stochastic integration.</span></div>
+          <div class="callout"><strong>Why Deng’s machinery is not automatically relevant.</strong> Once \(s_\theta\) is fixed, two generated samples obey independent copies of this SDE. Their joint law factorizes exactly if their initial noises are independent. There is no BBGKY closure problem and no collision-generated cumulant hierarchy to control.</div>
+
+          <span class="status established">Case B · Mean-field Langevin neural training</span>
+          <h3>Here the particles really interact.</h3>
+          <p>Let \(\theta_i\) denote neuron \(i\)’s parameters and \(\rho_t^m=m^{-1}\sum_i\delta_{\theta_i(t)}\) their empirical law. A noisy mean-field training model has the schematic form</p>
+          <div class="equation">\[ d\theta_i(t)=-\nabla_\theta\frac{\delta\mathcal R}{\delta\rho}\!\left(\rho_t^m\right)(\theta_i(t))\,dt+\sqrt{2\beta^{-1}}\,dB_i(t). \]<span class="explain">\(\mathcal R(\rho)\) is the population risk functional, \(\delta\mathcal R/\delta\rho\) its first variation, \(B_i\) represents independent Brownian motions, and \(\beta\) is the inverse noise level. Every particle feels the empirical distribution, so the neurons are coupled.</span></div>
+          <p>As \(m\to\infty\), the one-particle law can satisfy a nonlinear Fokker–Planck equation</p>
+          <div class="equation">\[ \partial_t\rho_t=\nabla_\theta\!\cdot\!\left(\rho_t\nabla_\theta\frac{\delta\mathcal R}{\delta\rho}(\rho_t)\right)+\beta^{-1}\Delta_\theta\rho_t. \]<span class="explain">The first term transports neurons down the population-risk gradient; the Laplacian diffuses the distribution. The associated free energy is typically risk plus an entropy regularizer, under the hypotheses of the particular model.</span></div>
+          <p>The finite-\(m\) joint law has a hierarchy of marginals, and “propagation of chaos” asks whether any fixed number of neurons become asymptotically independent with common law \(\rho_t\). Uniform-in-time results already exist under functional convexity, hypocoercivity, log-Sobolev, or related stabilizing assumptions.</p>
+
+          <span class="status program">Where Deng may add value</span>
+          <p>The open opportunity is the noncontractive regime: nonconvex risk, metastable wells, weak or vanishing noise, feature learning, or times that grow with width. A connected-cumulant hierarchy could try to exploit three mechanisms simultaneously:</p>
+          <ol class="logic-chain">
+            <li><div><strong>Diffusive smoothing:</strong> Brownian noise regularizes short scales and may damp some high-order correlations.</div></li>
+            <li><div><strong>Connected-history counting:</strong> only interaction graphs that genuinely link the observed neurons contribute to their cumulant.</div></li>
+            <li><div><strong>Late-time dissipation:</strong> decay of free energy or training residual can make the cumulative forcing integrable even without global convexity.</div></li>
+          </ol>
+          <div class="equation">\[ \sup_{t\ge0}\left\|\operatorname{Cum}_r\!\left(\theta_{1}(t),\ldots,\theta_r(t)\right)\right\|\ \stackrel{?}{\lesssim}\ m^{1-r}\,C_r(\beta,\mathcal R). \]<span class="explain">This is a proposed target, not a known bound in this generality. The exponent and norm depend on normalization, observables, and assumptions. Its purpose is to state what “long-time propagation of randomness” would have to mean quantitatively.</span></div>
+
+          <span class="status program">Case C · Interacting diffusion generators</span>
+          <h3>Diffusion models can be redesigned to create the missing hierarchy.</h3>
+          <p>Some generative models evolve a set \(X_t^1,\ldots,X_t^N\) jointly, with drift depending on the empirical measure \(\mu_t^N=N^{-1}\sum_j\delta_{X_t^j}\):</p>
+          <div class="equation">\[ dX_t^i=B\!\left(X_t^i,\mu_t^N,t\right)dt+\sigma(t)dW_t^i. \]<span class="explain">This is a McKean–Vlasov particle system. Its large-\(N\) density solves a nonlinear Fokker–Planck equation, and finite-\(N\) accuracy is genuinely a propagation-of-chaos problem. Mean-field chaos diffusion models are one explicit AI proposal in this direction.</span></div>
+          <p>Here a Deng-inspired program is logically coherent: track connected sample correlations across the reverse diffusion, organize long interaction histories, and seek error bounds uniform in sampling time or stable under aggressive discretization. But the diagrams would encode drift derivatives and Gaussian noise pairings—not hard-sphere collision molecules.</p>
+        </div>
+      </section>
+
+      <section id="proposal">
+        <div class="kicker">08 · Best research bet</div>
+        <h2>A connected neural tangent hierarchy for long-time feature learning.</h2>
+        <div class="research-target">
+          <span class="status program">Falsifiable proposed theorem program</span>
+          <blockquote>For a specified finite-width network and training distribution, prove that a truncated hierarchy of connected tangent correlations approximates gradient-flow training until convergence, with error \(O(m^{-\gamma})\) for some \(\gamma&gt;0\), while permitting order-one evolution of the neural tangent kernel.</blockquote>
+          <p>This statement is intentionally a target, not a claim of existing proof. “Specified” must include architecture, initialization, data distribution, loss, normalization, width scaling, and the norm in which approximation is measured.</p>
+        </div>
+        <div class="cards">
+          <div class="card"><div class="number">01</div><h3>Choose a tractable model</h3><p>Start with a two-layer or residual network where the exact hierarchy is explicit and training residuals can be controlled.</p></div>
+          <div class="card"><div class="number">02</div><h3>Define connected objects</h3><p>Use a partition lattice or generating functional to remove all lower-order factorizations from each tangent correlation.</p></div>
+          <div class="card"><div class="number">03</div><h3>Expand only locally in time</h3><p>Avoid a single global series. Restart expansions on time slabs while carrying forward controlled cumulant data—the conceptual role of partial time expansion.</p></div>
+          <div class="card"><div class="number">04</div><h3>Classify histories</h3><p>Encode derivative contractions as diagrams, cut them at articulation structures, and prove summability of the dangerous connected classes.</p></div>
+          <div class="card"><div class="number">05</div><h3>Exploit optimization decay</h3><p>The driving factor \(f(t)-y\) may decay. Integrability of the residual can replace unavailable contractivity and suppress late-time accumulation.</p></div>
+          <div class="card"><div class="number">06</div><h3>Prove a non-NTK phenomenon</h3><p>The result matters only if it allows \(K_t^{(2)}-K_0^{(2)}=O(1)\). Otherwise existing lazy-training theory may already suffice.</p></div>
+        </div>
+      </section>
+
+      <section id="falsifiers">
+        <div class="kicker">09 · Epistemic guardrails</div>
+        <h2>How to know whether the analogy earns its keep.</h2>
+        <div class="test-grid">
+          <div class="test pass"><span class="signal established">Pass</span><h3>Concrete hierarchy</h3><p>The AI model has an exact or controlled hierarchy whose order \(r\) object couples to order \(r+1\).</p></div>
+          <div class="test pass"><span class="signal established">Pass</span><h3>Connectedness gives a bound</h3><p>Subtracting factorizable pieces yields extra powers of width, cancellation, or temporal integrability.</p></div>
+          <div class="test pass"><span class="signal established">Pass</span><h3>Long-time improvement</h3><p>The method improves a bound on a time or depth scale where direct Grönwall or fixed-order truncation fails.</p></div>
+          <div class="test fail"><span class="signal reject">Fail</span><h3>Vocabulary-only transfer</h3><p>Renaming neurons “particles” or training steps “collisions” produces no new estimate or theorem.</p></div>
+          <div class="test fail"><span class="signal reject">Fail</span><h3>Missing small parameter</h3><p>No width, interaction, noise, or scaling parameter controls the proposed hierarchy; “correlation is small” is merely asserted.</p></div>
+          <div class="test fail"><span class="signal reject">Fail</span><h3>False physical identification</h3><p>Claims that loss is Boltzmann entropy, intelligence is a hydrodynamic limit, or scaling laws are Boltzmann–Grad lack defined operators and hypotheses.</p></div>
+        </div>
+      </section>
+
+      <section id="sources">
+        <div class="kicker">10 · Primary-source trail</div>
+        <h2>What is verified, and where.</h2>
+        <p class="lede">The report separates statements supported by existing papers from the proposed research program. Recent items remain preprints unless a journal publication is explicitly linked.</p>
+        <ul class="sources">
+          <li><a href="https://arxiv.org/abs/2408.07818">Deng, Hani &amp; Ma — Long time derivation of the Boltzmann equation from hard sphere dynamics</a><small>Long-time cumulant ansatz, partial time expansion, molecules, cutting algorithm; arXiv v3, 2025.</small></li>
+          <li><a href="https://arxiv.org/abs/2503.01800">Deng, Hani &amp; Ma — From Newton to Boltzmann, Euler, and Navier–Stokes–Fourier</a><small>Companion hydrodynamic-limit result in the specified rarefied hard-sphere setting.</small></li>
+          <li><a href="https://arxiv.org/abs/2104.11204">Deng &amp; Hani — Full derivation of the wave kinetic equation</a><small>Kinetic-time derivation for cubic NLS in dimension \(d\ge3\) under the paper’s scaling.</small></li>
+          <li><a href="https://arxiv.org/abs/2311.10082">Deng &amp; Hani — On the derivation of the wave kinetic equation for NLS</a><small>Full-lifespan kinetic description under the stated regimes.</small></li>
+          <li><a href="https://arxiv.org/abs/2006.09285">Deng, Nahmod &amp; Yue — Random tensors, propagation of randomness, and nonlinear dispersive equations</a><small>Adapted random tensor coefficients and multilinear Gaussian expansions.</small></li>
+          <li><a href="https://arxiv.org/abs/1804.06561">Mei, Montanari &amp; Nguyen — A Mean Field View of the Landscape of Two-Layers Neural Networks</a><small>Distributional PDE limit for two-layer neural-network training.</small></li>
+          <li><a href="https://arxiv.org/abs/1909.08156">Huang &amp; Yau — Dynamics of Deep Neural Networks and Neural Tangent Hierarchy</a><small>Exact infinite hierarchy and finite-width truncation around NTK dynamics.</small></li>
+          <li><a href="https://arxiv.org/abs/1910.12478">Yang — Tensor Programs I</a><small>Gaussian-process limits for broad classes of wide neural architectures.</small></li>
+          <li><a href="https://arxiv.org/abs/2501.18322">Castin, Ablin, Carrillo &amp; Peyré — A Unified Perspective on the Dynamics of Deep Transformers</a><small>Transformer PDEs and mean-field particle limits for specified attention variants.</small></li>
+          <li><a href="https://arxiv.org/abs/2011.13456">Song et al. — Score-Based Generative Modeling through Stochastic Differential Equations</a><small>Forward noising SDE, score-dependent reverse-time SDE, and probability-flow ODE; ICLR 2021.</small></li>
+          <li><a href="https://arxiv.org/abs/2306.07221">Suzuki, Wu &amp; Nitanda — Convergence of mean-field Langevin dynamics</a><small>Uniform-in-time particle approximation including discretization and stochastic-gradient errors, under the paper’s assumptions.</small></li>
+          <li><a href="https://arxiv.org/abs/2307.02168">Uniform-in-time propagation of chaos for kinetic mean-field Langevin dynamics</a><small>Includes a neural-network-training application under stabilizing assumptions.</small></li>
+          <li><a href="https://arxiv.org/abs/2406.05396">Park, Kim &amp; Alaa — Mean-field Chaos Diffusion Models</a><small>An explicit score-based generative construction for high-cardinality interacting particle data; 2024 preprint.</small></li>
+          <li><a href="https://arxiv.org/abs/2304.13534">Zhang &amp; Katsoulakis — A mean-field games laboratory for generative modeling</a><small>Forward–backward PDE and mean-field-game formulations connecting generative flows, score models, and Wasserstein gradient flows.</small></li>
+          <li><a href="https://arxiv.org/abs/2508.11522">Finite-width neural tangent kernels from Feynman diagrams</a><small>Diagrammatic finite-width corrections; 2025 preprint.</small></li>
+          <li><a href="https://arxiv.org/abs/2605.22010">Glasgow &amp; Bruna — Uniform-in-Time Weak Propagation-of-Chaos in Shallow Neural Networks</a><small>Long-time mean-field control under loss-decay/integrability conditions; 2026 preprint.</small></li>
+        </ul>
+        <p class="provenance">Prepared 13 August 2026 from the project lecture, transcript, and linked primary papers. Equations labelled “schematic” suppress architecture-specific constants and tensor indices. Proposed statements are explicitly marked and should not be cited as established theorems. This report does not claim that Yu Deng or the cited AI-theory authors endorse these research connections.</p>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
